@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Application
+    x:Class="LogCollector.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helpers="using:LogCollector.Helpers"
+    xmlns:local="using:LogCollector">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+            </ResourceDictionary.MergedDictionaries>
+            <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <helpers:BoolToVisibilityInvertedConverter x:Key="BoolToVisibilityInvertedConverter" />
+            <helpers:BoolNegationConverter x:Key="BoolNegationConverter" />
+            <helpers:EmptyToVisibilityConverter x:Key="EmptyToVisibilityConverter" />
+            <helpers:StringToSeverityConverter x:Key="StringToSeverityConverter" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
