@@ -15,6 +15,13 @@
             <Setter Property="MinHeight" Value="44" />
             <Setter Property="CornerRadius" Value="4" />
         </Style>
+        <!-- Mocha blur — in-app acrylic, warm tint, Fallback keeps cards readable. Used only on hero. -->
+        <AcrylicBrush
+            x:Key="MochaAcrylicBrush"
+            TintColor="{ThemeResource SystemAccentColor}"
+            TintOpacity="0.42"
+            TintLuminosityOpacity="0.92"
+            FallbackColor="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -27,38 +34,40 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Header — strictly Fluent: no gradient, no acrylic, just typography + actions -->
-            <Grid Grid.Row="0" ColumnSpacing="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
+            <!-- Header — mocha blur: single Acrylic hero (strict Fluent: only hero is Acrylic) -->
+            <Border Grid.Row="0" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="16" Background="{StaticResource MochaAcrylicBrush}">
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <Border Width="48" Height="48" CornerRadius="8" Background="{ThemeResource AccentFillColorDefaultBrush}">
-                    <FontIcon Glyph="&#xE9D9;" FontSize="24" Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                </Border>
+                    <Border Width="48" Height="48" CornerRadius="8" Background="{ThemeResource AccentFillColorDefaultBrush}">
+                        <FontIcon Glyph="&#xE9D9;" FontSize="24" Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                    </Border>
 
-                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                    <TextBlock Text="Windows Log Collector" Style="{StaticResource TitleTextBlockStyle}" />
-                    <TextBlock Text="Exports only Windows Logs (Application, Security, Setup, System, ForwardedEvents) as native .evtx." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
-                </StackPanel>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Text="Windows Log Collector" Style="{StaticResource TitleTextBlockStyle}" />
+                        <TextBlock Text="Exports only Windows Logs (Application, Security, Setup, System, ForwardedEvents) as native .evtx." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
 
-                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <Button Command="{x:Bind ViewModel.OpenEventViewerCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenEventViewer" ToolTipService.ToolTip="Open Event Viewer (eventvwr.msc)">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <FontIcon Glyph="&#xE7B8;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                            <TextBlock Text="Event Viewer" />
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{x:Bind ViewModel.LoadLogsCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnRefreshLogs" ToolTipService.ToolTip="Refresh Windows Logs">
-                        <StackPanel Orientation="Horizontal" Spacing="6">
-                            <FontIcon Glyph="&#xE72C;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                            <TextBlock Text="Refresh" />
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </Grid>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Button Command="{x:Bind ViewModel.OpenEventViewerCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenEventViewer" ToolTipService.ToolTip="Open Event Viewer (eventvwr.msc)">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon Glyph="&#xE7B8;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                <TextBlock Text="Event Viewer" />
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{x:Bind ViewModel.LoadLogsCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnRefreshLogs" ToolTipService.ToolTip="Refresh Windows Logs">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <FontIcon Glyph="&#xE72C;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                <TextBlock Text="Refresh" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
 
             <!-- Status -->
             <StackPanel Grid.Row="1" Spacing="8">

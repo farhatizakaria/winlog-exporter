@@ -10,6 +10,28 @@
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
             </ResourceDictionary.MergedDictionaries>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <!-- Mocha — warm coffee tint for Mica/DesktopAcrylic -->
+                    <Color x:Key="SystemAccentColor">#A0826D</Color>
+                    <Color x:Key="SystemAccentColorLight1">#B89A85</Color>
+                    <Color x:Key="SystemAccentColorLight2">#D0BCAE</Color>
+                    <Color x:Key="SystemAccentColorLight3">#E8DDD3</Color>
+                    <Color x:Key="SystemAccentColorDark1">#8A6B5A</Color>
+                    <Color x:Key="SystemAccentColorDark2">#745A4D</Color>
+                    <Color x:Key="SystemAccentColorDark3">#5E4A3F</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <Color x:Key="SystemAccentColor">#C9A68A</Color>
+                    <Color x:Key="SystemAccentColorLight1">#D9BCA6</Color>
+                    <Color x:Key="SystemAccentColorLight2">#E8D2C2</Color>
+                    <Color x:Key="SystemAccentColorLight3">#F5E9DE</Color>
+                    <Color x:Key="SystemAccentColorDark1">#A0826D</Color>
+                    <Color x:Key="SystemAccentColorDark2">#8A6B5A</Color>
+                    <Color x:Key="SystemAccentColorDark3">#745A4D</Color>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="HighContrast" />
+            </ResourceDictionary.ThemeDictionaries>
             <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
             <helpers:BoolToVisibilityInvertedConverter x:Key="BoolToVisibilityInvertedConverter" />
             <helpers:BoolNegationConverter x:Key="BoolNegationConverter" />
