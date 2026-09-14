@@ -15,217 +15,387 @@
             <Setter Property="MinHeight" Value="44" />
             <Setter Property="CornerRadius" Value="4" />
         </Style>
-        <!-- Mocha blur — in-app acrylic, warm tint, Fallback keeps cards readable. Used only on hero. -->
+
+        <!-- Accent-blur: follows Windows accent (Settings > Personalization > Accent). Only hero uses Acrylic per Fluent. -->
         <AcrylicBrush
-            x:Key="MochaAcrylicBrush"
+            x:Key="AccentAcrylicBrush"
             TintColor="{ThemeResource SystemAccentColor}"
-            TintOpacity="0.42"
-            TintLuminosityOpacity="0.92"
+            TintOpacity="0.28"
+            TintLuminosityOpacity="0.88"
             FallbackColor="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+
+        <DataTemplate x:Key="WideLogTemplate" x:DataType="models:LogChannelInfo">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition Width="90" />
+                    <ColumnDefinition Width="90" />
+                    <ColumnDefinition Width="80" />
+                </Grid.ColumnDefinitions>
+                <CheckBox IsChecked="{x:Bind IsSelected, Mode=TwoWay}" MinWidth="0" VerticalAlignment="Center" AutomationProperties.AutomationId="{x:Bind LogName}" />
+                <TextBlock Grid.Column="1" Text="{x:Bind LogName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{x:Bind LogName}" Style="{StaticResource BodyTextBlockStyle}" />
+                <TextBlock Grid.Column="2" Text="{x:Bind CategoryDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <TextBlock Grid.Column="3" Text="{x:Bind RecordCountDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Right" />
+                <TextBlock Grid.Column="4" Text="{x:Bind FileSizeDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Right" />
+                <TextBlock Grid.Column="5" Text="{x:Bind StatusDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate x:Key="NarrowLogTemplate" x:DataType="models:LogChannelInfo">
+            <Grid ColumnSpacing="12" RowSpacing="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="80" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <CheckBox IsChecked="{x:Bind IsSelected, Mode=TwoWay}" MinWidth="0" VerticalAlignment="Center" Grid.RowSpan="2" AutomationProperties.AutomationId="{x:Bind LogName}" />
+                <TextBlock Grid.Column="1" Text="{x:Bind LogName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{x:Bind LogName}" Style="{StaticResource BodyTextBlockStyle}" FontWeight="Medium" />
+                <TextBlock Grid.Column="2" Text="{x:Bind StatusDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                <StackPanel Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="{x:Bind CategoryDisplay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Text="·" Foreground="{ThemeResource TextFillColorTertiaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                    <TextBlock Text="{x:Bind RecordCountDisplay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                    <TextBlock Text="·" Foreground="{ThemeResource TextFillColorTertiaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                    <TextBlock Text="{x:Bind FileSizeDisplay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
     </Page.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <Grid Padding="24" RowSpacing="16" MaxWidth="1024">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="WindowSizeStates">
+                <!-- Narrow < 641 -->
+                <VisualState x:Name="Narrow">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootGrid.Padding" Value="16" />
+                        <Setter Target="RootGrid.MaxWidth" Value="640" />
+                        <Setter Target="HeaderWide.Visibility" Value="Collapsed" />
+                        <Setter Target="HeaderNarrow.Visibility" Value="Visible" />
+                        <Setter Target="DestinationWideInput.Visibility" Value="Collapsed" />
+                        <Setter Target="DestinationNarrowInput.Visibility" Value="Visible" />
+                        <Setter Target="LogsToolbarWide.Visibility" Value="Collapsed" />
+                        <Setter Target="LogsToolbarNarrow.Visibility" Value="Visible" />
+                        <Setter Target="WideLogsHeader.Visibility" Value="Collapsed" />
+                        <Setter Target="NarrowLogsHeader.Visibility" Value="Visible" />
+                        <Setter Target="LogsList.ItemTemplate" Value="{StaticResource NarrowLogTemplate}" />
+                        <Setter Target="ActionWide.Visibility" Value="Collapsed" />
+                        <Setter Target="ActionNarrow.Visibility" Value="Visible" />
+                    </VisualState.Setters>
+                </VisualState>
+                <!-- Medium 641-1007 -->
+                <VisualState x:Name="Medium">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="641" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootGrid.Padding" Value="20" />
+                        <Setter Target="RootGrid.MaxWidth" Value="840" />
+                        <Setter Target="HeaderWide.Visibility" Value="Visible" />
+                        <Setter Target="HeaderNarrow.Visibility" Value="Collapsed" />
+                        <Setter Target="DestinationWideInput.Visibility" Value="Visible" />
+                        <Setter Target="DestinationNarrowInput.Visibility" Value="Collapsed" />
+                        <Setter Target="LogsToolbarWide.Visibility" Value="Visible" />
+                        <Setter Target="LogsToolbarNarrow.Visibility" Value="Collapsed" />
+                        <Setter Target="WideLogsHeader.Visibility" Value="Visible" />
+                        <Setter Target="NarrowLogsHeader.Visibility" Value="Collapsed" />
+                        <Setter Target="LogsList.ItemTemplate" Value="{StaticResource WideLogTemplate}" />
+                        <Setter Target="ActionWide.Visibility" Value="Visible" />
+                        <Setter Target="ActionNarrow.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+                <!-- Wide >=1008 -->
+                <VisualState x:Name="Wide">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="1008" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="RootGrid.Padding" Value="24" />
+                        <Setter Target="RootGrid.MaxWidth" Value="1024" />
+                        <Setter Target="HeaderWide.Visibility" Value="Visible" />
+                        <Setter Target="HeaderNarrow.Visibility" Value="Collapsed" />
+                        <Setter Target="DestinationWideInput.Visibility" Value="Visible" />
+                        <Setter Target="DestinationNarrowInput.Visibility" Value="Collapsed" />
+                        <Setter Target="LogsToolbarWide.Visibility" Value="Visible" />
+                        <Setter Target="LogsToolbarNarrow.Visibility" Value="Collapsed" />
+                        <Setter Target="WideLogsHeader.Visibility" Value="Visible" />
+                        <Setter Target="NarrowLogsHeader.Visibility" Value="Collapsed" />
+                        <Setter Target="LogsList.ItemTemplate" Value="{StaticResource WideLogTemplate}" />
+                        <Setter Target="ActionWide.Visibility" Value="Visible" />
+                        <Setter Target="ActionNarrow.Visibility" Value="Collapsed" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
 
-            <!-- Header — mocha blur: single Acrylic hero (strict Fluent: only hero is Acrylic) -->
-            <Border Grid.Row="0" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="16" Background="{StaticResource MochaAcrylicBrush}">
-                <Grid ColumnSpacing="16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid x:Name="RootGrid" Padding="24" RowSpacing="16" MaxWidth="1024">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                    <Border Width="48" Height="48" CornerRadius="8" Background="{ThemeResource AccentFillColorDefaultBrush}">
-                        <FontIcon Glyph="&#xE9D9;" FontSize="24" Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                    </Border>
-
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-                        <TextBlock Text="Windows Log Collector" Style="{StaticResource TitleTextBlockStyle}" />
-                        <TextBlock Text="Exports only Windows Logs (Application, Security, Setup, System, ForwardedEvents) as native .evtx." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <Button Command="{x:Bind ViewModel.OpenEventViewerCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenEventViewer" ToolTipService.ToolTip="Open Event Viewer (eventvwr.msc)">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE7B8;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                                <TextBlock Text="Event Viewer" />
+                <!-- HERO — accent blur, responsive: Wide Grid vs Narrow Stack -->
+                <Border x:Name="HeroBorder" Grid.Row="0" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="16" Background="{StaticResource AccentAcrylicBrush}">
+                    <Grid>
+                        <!-- Wide -->
+                        <Grid x:Name="HeaderWide" ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Border Width="48" Height="48" CornerRadius="8" Background="{ThemeResource AccentFillColorDefaultBrush}">
+                                <FontIcon Glyph="&#xE9D9;" FontSize="24" Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                            </Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="Windows Log Collector" Style="{StaticResource TitleTextBlockStyle}" />
+                                <TextBlock Text="Exports only Windows Logs (Application, Security, Setup, System, ForwardedEvents) as native .evtx." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
                             </StackPanel>
-                        </Button>
-                        <Button Command="{x:Bind ViewModel.LoadLogsCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnRefreshLogs" ToolTipService.ToolTip="Refresh Windows Logs">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE72C;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                                <TextBlock Text="Refresh" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <Button Command="{x:Bind ViewModel.OpenEventViewerCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenEventViewer" ToolTipService.ToolTip="Open Event Viewer (eventvwr.msc)">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon Glyph="&#xE7B8;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                        <TextBlock Text="Event Viewer" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{x:Bind ViewModel.LoadLogsCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnRefreshLogs" ToolTipService.ToolTip="Refresh Windows Logs">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon Glyph="&#xE72C;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                        <TextBlock Text="Refresh" />
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- Status -->
-            <StackPanel Grid.Row="1" Spacing="8">
-                <InfoBar Title="Administrator recommended" Message="Security log requires elevation — right-click the app and Run as administrator for complete export." Severity="Warning" IsOpen="{x:Bind ViewModel.IsAdmin, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" IsClosable="False" />
-                <InfoBar IsOpen="{x:Bind ViewModel.HasStatus, Mode=OneWay}" Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource StringToSeverityConverter}}" Title="Status" Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" IsClosable="True" />
-            </StackPanel>
-
-            <!-- Destination — Card (WinUI Settings style) -->
-            <Border Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
-                <Grid RowSpacing="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <FontIcon Glyph="&#xE8B7;" FontSize="16" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                        <StackPanel Grid.Column="1" Spacing="2">
-                            <TextBlock Text="Destination folder" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                            <TextBlock Text="Includes hostname — creates WindowsLogs_HOST_timestamp so exports are traceable per machine." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid Grid.Row="1" ColumnSpacing="8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{x:Bind ViewModel.DestinationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="C:\Logs\WindowsLogs_HOST_2026..." AutomationProperties.AutomationId="TxtDestinationFolder" />
-                        <Button Grid.Column="1" Content="Browse…" Command="{x:Bind ViewModel.BrowseFolderCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnBrowseFolder" Style="{StaticResource AccentButtonStyle}" />
-                        <Button Grid.Column="2" Command="{x:Bind ViewModel.OpenDestinationCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenFolder" ToolTipService.ToolTip="Open folder in File Explorer">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE8A7;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                                <TextBlock Text="Open" />
-                            </StackPanel>
-                        </Button>
-                    </Grid>
-
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8">
-                        <TextBlock Text="{x:Bind ViewModel.SelectedCount, Mode=OneWay}" FontWeight="SemiBold" Style="{StaticResource CaptionTextBlockStyle}" />
-                        <TextBlock Text="selected" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
-                        <TextBlock Text="·" Foreground="{ThemeResource TextFillColorTertiaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" Margin="4,0" />
-                        <TextBlock Text="{x:Bind ViewModel.TotalCount, Mode=OneWay}" FontWeight="SemiBold" Style="{StaticResource CaptionTextBlockStyle}" />
-                        <TextBlock Text="Windows Logs" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
-                        <Border Width="1" Height="12" Background="{ThemeResource DividerStrokeColorDefaultBrush}" VerticalAlignment="Center" Margin="8,0" />
-                        <TextBlock Text="{x:Bind ViewModel.SummaryText, Mode=OneWay}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" MaxWidth="520" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-
-            <!-- Logs — Card -->
-            <Border Grid.Row="3" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
-                <Grid RowSpacing="12">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <Grid ColumnSpacing="12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Windows Logs" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" />
-                        <AutoSuggestBox Grid.Column="1" PlaceholderText="Filter (e.g., Security, System)" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" QueryIcon="Find" AutomationProperties.AutomationId="SearchLogsBox" MinWidth="240" MaxWidth="420" />
-                        <Button Grid.Column="2" Content="Select all" Command="{x:Bind ViewModel.SelectAllCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnSelectAll" />
-                        <Button Grid.Column="3" Content="Deselect all" Command="{x:Bind ViewModel.DeselectAllCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnDeselectAll" />
-                    </Grid>
-
-                    <!-- Column headers — SubtleFill, not acrylic -->
-                    <Grid Grid.Row="1" Padding="12,8,12,8" ColumnSpacing="12" Background="{ThemeResource SubtleFillColorTransparentBrush}" CornerRadius="4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="32" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="110" />
-                            <ColumnDefinition Width="90" />
-                            <ColumnDefinition Width="90" />
-                            <ColumnDefinition Width="80" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="1" Text="Log name" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                        <TextBlock Grid.Column="2" Text="Type" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                        <TextBlock Grid.Column="3" Text="Records" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Right" />
-                        <TextBlock Grid.Column="4" Text="Size" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Right" />
-                        <TextBlock Grid.Column="5" Text="Status" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" />
-                    </Grid>
-
-                    <Grid Grid.Row="2" MinHeight="220">
-                        <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
-                        <ListView ItemsSource="{x:Bind ViewModel.FilteredLogs, Mode=OneWay}" SelectionMode="None" ItemContainerStyle="{StaticResource LogItemStyle}" AutomationProperties.AutomationId="ListEventLogs" Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" MaxHeight="400">
-                            <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="models:LogChannelInfo">
-                                    <Grid ColumnSpacing="12">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="32" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="110" />
-                                            <ColumnDefinition Width="90" />
-                                            <ColumnDefinition Width="90" />
-                                            <ColumnDefinition Width="80" />
-                                        </Grid.ColumnDefinitions>
-                                        <CheckBox IsChecked="{x:Bind IsSelected, Mode=TwoWay}" MinWidth="0" VerticalAlignment="Center" AutomationProperties.AutomationId="{x:Bind LogName}" />
-                                        <TextBlock Grid.Column="1" Text="{x:Bind LogName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" ToolTipService.ToolTip="{x:Bind LogName}" Style="{StaticResource BodyTextBlockStyle}" />
-                                        <TextBlock Grid.Column="2" Text="{x:Bind CategoryDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                                        <TextBlock Grid.Column="3" Text="{x:Bind RecordCountDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Column="4" Text="{x:Bind FileSizeDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Right" />
-                                        <TextBlock Grid.Column="5" Text="{x:Bind StatusDisplay}" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" HorizontalAlignment="Center" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6" Visibility="{x:Bind ViewModel.IsFilteredEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
-                            <FontIcon Glyph="&#xE71E;" FontSize="20" Foreground="{ThemeResource TextFillColorTertiaryBrush}" HorizontalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                            <TextBlock Text="No Windows Logs match your filter." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" />
-                            <HyperlinkButton Content="Clear filter" Command="{x:Bind ViewModel.DeselectAllCommand, Mode=OneWay}" Visibility="Collapsed" />
-                        </StackPanel>
-                    </Grid>
-                </Grid>
-            </Border>
-
-            <!-- Action — Card -->
-            <Border Grid.Row="4" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
-                <Grid ColumnSpacing="16" RowSpacing="12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Spacing="6" VerticalAlignment="Center">
-                        <ProgressBar Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" Minimum="0" Maximum="100" AutomationProperties.AutomationId="ProgressBar" />
-                        <TextBlock Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
-                    </StackPanel>
-
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <Button Content="Cancel" Command="{x:Bind ViewModel.CancelCollectCommand, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsCollecting, Mode=OneWay}" AutomationProperties.AutomationId="BtnCancel" />
-                        <Button AutomationProperties.AutomationId="BtnCollectAllLogs" Command="{x:Bind ViewModel.CollectCommand, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.IsCollecting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" Style="{StaticResource AccentButtonStyle}">
+                        </Grid>
+                        <!-- Narrow -->
+                        <StackPanel x:Name="HeaderNarrow" Spacing="12" Visibility="Collapsed">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Border Width="40" Height="40" CornerRadius="8" Background="{ThemeResource AccentFillColorDefaultBrush}">
+                                    <FontIcon Glyph="&#xE9D9;" FontSize="20" Foreground="{ThemeResource TextOnAccentFillColorPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                </Border>
+                                <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                    <TextBlock Text="Windows Log Collector" Style="{StaticResource SubtitleTextBlockStyle}" FontWeight="SemiBold" />
+                                    <TextBlock Text="Only Windows Logs as .evtx." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Grid>
                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="&#xE896;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
-                                <TextBlock Text="Export Windows Logs" FontWeight="SemiBold" />
+                                <Button Command="{x:Bind ViewModel.OpenEventViewerCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenEventViewerNarrow" Style="{StaticResource DefaultButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon Glyph="&#xE7B8;" FontSize="13" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                        <TextBlock Text="Event Viewer" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Command="{x:Bind ViewModel.LoadLogsCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnRefreshLogsNarrow">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon Glyph="&#xE72C;" FontSize="13" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                        <TextBlock Text="Refresh" />
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
-                        </Button>
-                    </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
-                    <InfoBar Grid.Row="1" Grid.ColumnSpan="2" Severity="Informational" Title="Native .evtx" Message="Files open directly in Event Viewer. Keep the hostname folder name when sharing for forensics." IsOpen="True" IsClosable="False" />
-                </Grid>
-            </Border>
-        </Grid>
-    </ScrollViewer>
+                <StackPanel Grid.Row="1" Spacing="8">
+                    <InfoBar Title="Administrator recommended" Message="Security log requires elevation — right-click the app and Run as administrator." Severity="Warning" IsOpen="{x:Bind ViewModel.IsAdmin, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" IsClosable="False" />
+                    <InfoBar IsOpen="{x:Bind ViewModel.HasStatus, Mode=OneWay}" Severity="{x:Bind ViewModel.StatusSeverity, Mode=OneWay, Converter={StaticResource StringToSeverityConverter}}" Title="Status" Message="{x:Bind ViewModel.StatusMessage, Mode=OneWay}" IsClosable="True" />
+                </StackPanel>
+
+                <!-- Destination -->
+                <Border Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                    <Grid RowSpacing="12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <FontIcon Glyph="&#xE8B7;" FontSize="16" Foreground="{ThemeResource TextFillColorSecondaryBrush}" VerticalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                            <StackPanel Grid.Column="1" Spacing="2">
+                                <TextBlock Text="Destination folder" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                                <TextBlock Text="Includes hostname — WindowsLogs_HOST_timestamp." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Wide input -->
+                        <Grid x:Name="DestinationWideInput" Grid.Row="1" ColumnSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0" Text="{x:Bind ViewModel.DestinationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="C:\Logs\WindowsLogs_HOST_2026..." AutomationProperties.AutomationId="TxtDestinationFolder" />
+                            <Button Grid.Column="1" Content="Browse…" Command="{x:Bind ViewModel.BrowseFolderCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnBrowseFolder" Style="{StaticResource AccentButtonStyle}" />
+                            <Button Grid.Column="2" Command="{x:Bind ViewModel.OpenDestinationCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenFolder" ToolTipService.ToolTip="Open folder in File Explorer">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <FontIcon Glyph="&#xE8A7;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                    <TextBlock Text="Open" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                        <!-- Narrow input -->
+                        <StackPanel x:Name="DestinationNarrowInput" Grid.Row="1" Spacing="8" Visibility="Collapsed">
+                            <TextBox Text="{x:Bind ViewModel.DestinationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="C:\Logs\WindowsLogs_HOST_2026..." AutomationProperties.AutomationId="TxtDestinationFolderNarrow" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="Browse…" Command="{x:Bind ViewModel.BrowseFolderCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnBrowseFolderNarrow" Style="{StaticResource AccentButtonStyle}" />
+                                <Button Command="{x:Bind ViewModel.OpenDestinationCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenFolderNarrow">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <FontIcon Glyph="&#xE8A7;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                        <TextBlock Text="Open" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="{x:Bind ViewModel.SelectedCount, Mode=OneWay}" FontWeight="SemiBold" Style="{StaticResource CaptionTextBlockStyle}" />
+                            <TextBlock Text="selected" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                            <TextBlock Text="·" Foreground="{ThemeResource TextFillColorTertiaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" Margin="4,0" />
+                            <TextBlock Text="{x:Bind ViewModel.TotalCount, Mode=OneWay}" FontWeight="SemiBold" Style="{StaticResource CaptionTextBlockStyle}" />
+                            <TextBlock Text="Windows Logs" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" />
+                            <Border Width="1" Height="12" Background="{ThemeResource DividerStrokeColorDefaultBrush}" VerticalAlignment="Center" Margin="8,0" />
+                            <TextBlock Text="{x:Bind ViewModel.SummaryText, Mode=OneWay}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" MaxWidth="480" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Logs -->
+                <Border Grid.Row="3" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                    <Grid RowSpacing="12">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Wide toolbar -->
+                        <Grid x:Name="LogsToolbarWide" ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Windows Logs" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" />
+                            <AutoSuggestBox Grid.Column="1" PlaceholderText="Filter (e.g., Security, System)" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" QueryIcon="Find" AutomationProperties.AutomationId="SearchLogsBox" MinWidth="200" MaxWidth="420" />
+                            <Button Grid.Column="2" Content="Select all" Command="{x:Bind ViewModel.SelectAllCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnSelectAll" />
+                            <Button Grid.Column="3" Content="Deselect all" Command="{x:Bind ViewModel.DeselectAllCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnDeselectAll" />
+                        </Grid>
+                        <!-- Narrow toolbar -->
+                        <StackPanel x:Name="LogsToolbarNarrow" Spacing="8" Visibility="Collapsed">
+                            <TextBlock Text="Windows Logs" Style="{StaticResource BodyStrongTextBlockStyle}" />
+                            <AutoSuggestBox PlaceholderText="Filter (Security, System)" Text="{x:Bind ViewModel.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" QueryIcon="Find" AutomationProperties.AutomationId="SearchLogsBoxNarrow" />
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <Button Content="Select all" Command="{x:Bind ViewModel.SelectAllCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnSelectAllNarrow" />
+                                <Button Content="Deselect all" Command="{x:Bind ViewModel.DeselectAllCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnDeselectAllNarrow" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <!-- Headers -->
+                        <Grid x:Name="WideLogsHeader" Grid.Row="1" Padding="12,8,12,8" ColumnSpacing="12" Background="{ThemeResource SubtleFillColorTransparentBrush}" CornerRadius="4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="32" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="110" />
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="80" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="Log name" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock Grid.Column="2" Text="Type" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock Grid.Column="3" Text="Records" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Right" />
+                            <TextBlock Grid.Column="4" Text="Size" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Right" />
+                            <TextBlock Grid.Column="5" Text="Status" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" />
+                        </Grid>
+                        <Grid x:Name="NarrowLogsHeader" Grid.Row="1" Padding="12,8" ColumnSpacing="12" Background="{ThemeResource SubtleFillColorTransparentBrush}" CornerRadius="4" Visibility="Collapsed">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="32" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="80" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="1" Text="Log name" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" />
+                            <TextBlock Grid.Column="2" Text="Status" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" />
+                        </Grid>
+
+                        <Grid Grid.Row="2" MinHeight="220">
+                            <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            <ListView x:Name="LogsList" ItemsSource="{x:Bind ViewModel.FilteredLogs, Mode=OneWay}" SelectionMode="None" ItemContainerStyle="{StaticResource LogItemStyle}" AutomationProperties.AutomationId="ListEventLogs" Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityInvertedConverter}}" MaxHeight="400" ItemTemplate="{StaticResource WideLogTemplate}" />
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6" Visibility="{x:Bind ViewModel.IsFilteredEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <FontIcon Glyph="&#xE71E;" FontSize="20" Foreground="{ThemeResource TextFillColorTertiaryBrush}" HorizontalAlignment="Center" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                <TextBlock Text="No Windows Logs match your filter." Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Action -->
+                <Border Grid.Row="4" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                    <Grid>
+                        <!-- Wide -->
+                        <Grid x:Name="ActionWide" ColumnSpacing="16" RowSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Spacing="6" VerticalAlignment="Center">
+                                <ProgressBar Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" Minimum="0" Maximum="100" AutomationProperties.AutomationId="ProgressBar" />
+                                <TextBlock Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <Button Content="Cancel" Command="{x:Bind ViewModel.CancelCollectCommand, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsCollecting, Mode=OneWay}" AutomationProperties.AutomationId="BtnCancel" />
+                                <Button AutomationProperties.AutomationId="BtnCollectAllLogs" Command="{x:Bind ViewModel.CollectCommand, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.IsCollecting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" Style="{StaticResource AccentButtonStyle}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE896;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                        <TextBlock Text="Export Windows Logs" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <InfoBar Grid.Row="1" Grid.ColumnSpan="2" Severity="Informational" Title="Native .evtx" Message="Files open directly in Event Viewer. Folder includes hostname." IsOpen="True" IsClosable="False" />
+                        </Grid>
+                        <!-- Narrow -->
+                        <StackPanel x:Name="ActionNarrow" Spacing="12" Visibility="Collapsed">
+                            <StackPanel Spacing="6">
+                                <ProgressBar Value="{x:Bind ViewModel.ProgressValue, Mode=OneWay}" Minimum="0" Maximum="100" AutomationProperties.AutomationId="ProgressBarNarrow" />
+                                <TextBlock Text="{x:Bind ViewModel.ProgressText, Mode=OneWay}" Style="{StaticResource CaptionTextBlockStyle}" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Stretch">
+                                <Button Content="Cancel" Command="{x:Bind ViewModel.CancelCollectCommand, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsCollecting, Mode=OneWay}" AutomationProperties.AutomationId="BtnCancelNarrow" />
+                                <Button AutomationProperties.AutomationId="BtnCollectAllLogsNarrow" Command="{x:Bind ViewModel.CollectCommand, Mode=OneWay}" IsEnabled="{x:Bind ViewModel.IsCollecting, Mode=OneWay, Converter={StaticResource BoolNegationConverter}}" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Stretch">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <FontIcon Glyph="&#xE896;" FontSize="14" FontFamily="{ThemeResource SymbolThemeFontFamily}" />
+                                        <TextBlock Text="Export Windows Logs" FontWeight="SemiBold" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                            <InfoBar Severity="Informational" Title="Native .evtx" Message="Folder includes hostname." IsOpen="True" IsClosable="False" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
 </Page>
