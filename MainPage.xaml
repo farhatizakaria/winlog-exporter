@@ -85,7 +85,7 @@
 
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <FontIcon Glyph="&#xE8B7;" FontSize="16" Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}" />
-                    <TextBlock Text="Destination folder — Windows Logs will be saved here as .evtx files" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" />
+                    <TextBlock Text="Destination folder — includes hostname — Windows Logs saved as .evtx" Style="{StaticResource BodyStrongTextBlockStyle}" VerticalAlignment="Center" />
                 </StackPanel>
 
                 <Grid Grid.Row="1" ColumnSpacing="8">
@@ -97,7 +97,7 @@
                     <TextBox
                         Grid.Column="0"
                         Text="{x:Bind ViewModel.DestinationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        PlaceholderText="C:\Logs\EventLogs_2026..."
+                        PlaceholderText="C:\Logs\WindowsLogs_HOSTNAME_2026..."
                         AutomationProperties.AutomationId="TxtDestinationFolder" />
                     <Button Grid.Column="1" Content="Browse…" Command="{x:Bind ViewModel.BrowseFolderCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnBrowseFolder" Style="{StaticResource AccentButtonStyle}" />
                     <Button Grid.Column="2" Content="Open" Command="{x:Bind ViewModel.OpenDestinationCommand, Mode=OneWay}" AutomationProperties.AutomationId="BtnOpenFolder">

@@ -18,7 +18,16 @@ public partial class MainPageViewModel : ObservableObject
     [ObservableProperty]
     public partial string DestinationFolder { get; set; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
-        $"WindowsLogs_{DateTime.Now:yyyyMMdd_HHmmss}");
+        $"WindowsLogs_{SanitizeHostName(Environment.MachineName)}_{DateTime.Now:yyyyMMdd_HHmmss}");
+
+    private static string SanitizeHostName(string host)
+    {
+        if (string.IsNullOrWhiteSpace(host)) return "HOST";
+        var invalid = Path.GetInvalidFileNameChars();
+        var safe = string.Join("_", host.Split(invalid, StringSplitOptions.RemoveEmptyEntries)).Trim();
+        safe = safe.Replace(' ', '_');
+        return string.IsNullOrWhiteSpace(safe) ? "HOST" : safe;
+    }
 
     [ObservableProperty]
     public partial string SearchText { get; set; } = string.Empty;
@@ -194,6 +203,15 @@ public partial class MainPageViewModel : ObservableObject
         ProgressValue = 0;
         ProgressText = $"Starting export of {selected} Windows Logs…";
         _cts = new CancellationTokenSource();
+
+        // Ensure destination folder name contains hostname
+        var host = SanitizeHostName(Environment.MachineName);
+        if (!DestinationFolder.Contains(host, StringComparison.OrdinalIgnoreCase))
+        {
+            // Append hostname subfolder to respect user's picked parent but guarantee hostname in path
+            DestinationFolder = Path.Combine(DestinationFolder.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar),
+                $"WindowsLogs_{host}_{DateTime.Now:yyyyMMdd_HHmmss}");
+        }
 
         try
         {
