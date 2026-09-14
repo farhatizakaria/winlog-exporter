@@ -16,13 +16,7 @@
             <Setter Property="CornerRadius" Value="4" />
         </Style>
 
-        <!-- Accent-blur: follows Windows accent (Settings > Personalization > Accent). Only hero uses Acrylic per Fluent. -->
-        <AcrylicBrush
-            x:Key="AccentAcrylicBrush"
-            TintColor="{ThemeResource SystemAccentColor}"
-            TintOpacity="0.28"
-            TintLuminosityOpacity="0.88"
-            FallbackColor="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
+        <!-- Accent-tinted header: follows system accent via AccentFillColorDefaultBrush; no Acrylic for unpackaged compat. -->
 
         <DataTemplate x:Key="WideLogTemplate" x:DataType="models:LogChannelInfo">
             <Grid ColumnSpacing="12">
@@ -147,8 +141,8 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <!-- HERO — accent blur, responsive: Wide Grid vs Narrow Stack -->
-                <Border x:Name="HeroBorder" Grid.Row="0" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="16" Background="{StaticResource AccentAcrylicBrush}">
+                <!-- HERO — accent-aware, no Acrylic for portable -->
+                <Border x:Name="HeroBorder" Grid.Row="0" CornerRadius="8" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" Padding="16" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
                     <Grid>
                         <!-- Wide -->
                         <Grid x:Name="HeaderWide" ColumnSpacing="16">

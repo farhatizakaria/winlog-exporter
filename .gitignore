@@ -56,3 +56,8 @@ Generated\ Files/
 # Agent tooling (local)
 .opencode/
 .winapp/
+
+# Portable zips (local)
+*.zip
+winlog-exporter-portable*/
+portable*/

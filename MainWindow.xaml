@@ -8,7 +8,7 @@
     Title="LogCollector — Windows Log Exporter"
     mc:Ignorable="d">
     <Window.SystemBackdrop>
-        <DesktopAcrylicBackdrop />
+        <MicaBackdrop />
     </Window.SystemBackdrop>
 
     <Grid>
